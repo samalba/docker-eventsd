@@ -1,0 +1,12 @@
+# Example file
+
+cluster:
+    foo: tcp://192.168.59.104:2375
+    bar: tcp://192.168.59.105:2375
+
+events:
+    - 
+        type: kill
+        command: exec test
+        source: bar
+        contains: blah
