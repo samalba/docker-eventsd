@@ -2,7 +2,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"io/ioutil"
@@ -25,13 +24,21 @@ func loadYaml(filename string) (*EventsFile, error) {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintf(os.Stderr, "Usage: %s filename.yml\n", os.Args[0])
-		os.Exit(1)
+		log.Fatalf("Usage: %s filename.yml", os.Args[0])
 	}
 	filename := os.Args[1]
 	eventsFile, err := loadYaml(filename)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Cannot load \"%s\": %s\n", filename, err)
-		os.Exit(1)
+		log.Fatalf("Cannot load \"%s\": %s", filename, err)
+	}
+	log.Printf("ok: %#v\n", eventsFile)
+	cluster, err := NewCluster(eventsFile.Cluster)
+	if err != nil {
+		log.Fatalf("Cannot init the cluster: %s", err)
+	}
+	log.Printf("ok: %#v\n", cluster)
+	eventHandler := &EventHandler{eventsFile.Events}
+	if err := cluster.Events(eventHandler); err != nil {
+		log.Fatalf("Cannot init the log handler: %s", err)
 	}
 }
