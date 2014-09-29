@@ -9,6 +9,18 @@ import (
 	"gopkg.in/yaml.v1"
 )
 
+type EventsFile struct {
+	Cluster map[string]string
+	Events []Event
+}
+
+type Event struct {
+	Type string
+	Command string
+	Source string
+	Contains string
+}
+
 func loadYaml(filename string) (*EventsFile, error) {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -31,13 +43,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("Cannot load \"%s\": %s", filename, err)
 	}
-	log.Printf("ok: %#v\n", eventsFile)
 	cluster, err := NewCluster(eventsFile.Cluster)
 	if err != nil {
 		log.Fatalf("Cannot init the cluster: %s", err)
 	}
-	log.Printf("ok: %#v\n", cluster)
-	eventHandler := &EventHandler{eventsFile.Events}
+	eventHandler, err := NewEventHandler(eventsFile.Events)
+	if err != nil {
+		log.Fatalf("Cannot create the event handler: %s", err)
+	}
 	if err := cluster.Events(eventHandler); err != nil {
 		log.Fatalf("Cannot init the log handler: %s", err)
 	}

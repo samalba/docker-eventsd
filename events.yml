@@ -6,7 +6,8 @@ cluster:
 
 events:
     - 
-        type: kill
-        command: exec test
-        source: bar
-        contains: blah
+        type: kill, tcp_disconnect
+        from_engine: bar
+        from_container: blah
+        command: docker -H $ENGINE_FOO exec -- redis
+        log: Hello world $ENV
