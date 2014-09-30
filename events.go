@@ -42,9 +42,11 @@ func (h *EventHandler) findEvent(eventType string) *Event {
 func (h *EventHandler) Handle(e *citadel.Event) error {
 	ev := h.findEvent(e.Type)
 	if ev == nil {
-		log.Printf("Uncaught event: type %s", e.Type)
+		log.Printf("Uncaught event: type %s from %s@%s on %s", e.Type,
+			e.Engine.ID, e.Engine.Addr, e.Container.Name)
 		return nil
 	}
 	//TODO: build environment and executes the different handlers (log, command)
+	log.Printf("GOT EVENT: %#v", ev)
 	return nil
 }

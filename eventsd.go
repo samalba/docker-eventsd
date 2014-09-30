@@ -9,16 +9,19 @@ import (
 	"gopkg.in/yaml.v1"
 )
 
+var ExitChan chan bool
+
 type EventsFile struct {
 	Cluster map[string]string
 	Events []Event
 }
 
 type Event struct {
-	Type string
-	Command string
-	Source string
-	Contains string
+	Type string `json:"type,omitempty"`
+	Command string `json:"command,omitempty"`
+	FromEngine string `json:"from_engine,omitempty"`
+	FromContainer string `json:"from_container,omitempty"`
+	Log string `json:"log,omitempty"`
 }
 
 func loadYaml(filename string) (*EventsFile, error) {
@@ -47,6 +50,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Cannot init the cluster: %s", err)
 	}
+	ExitChan = make(chan bool, 1)
 	eventHandler, err := NewEventHandler(eventsFile.Events)
 	if err != nil {
 		log.Fatalf("Cannot create the event handler: %s", err)
@@ -54,4 +58,7 @@ func main() {
 	if err := cluster.Events(eventHandler); err != nil {
 		log.Fatalf("Cannot init the log handler: %s", err)
 	}
+	log.Println("Listening to events...")
+	<-ExitChan
+	log.Println("Stop.")
 }
