@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -10,7 +9,7 @@ import (
 )
 
 type EventHandler struct {
-	Events []Event
+	Events       []Event
 	handlerIndex map[string]int
 }
 

@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -17,7 +16,7 @@ func NewCluster(engines map[string]string) (*cluster.Cluster, error) {
 			ID:     name,
 			Addr:   url,
 			Memory: 2048, // unused
-			Cpus:   4, // unused
+			Cpus:   4,    // unused
 			Labels: []string{name},
 		}
 		err = e.Connect(nil)

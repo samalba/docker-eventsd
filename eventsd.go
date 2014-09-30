@@ -1,10 +1,9 @@
-
 package main
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
-	"io/ioutil"
 
 	"gopkg.in/yaml.v1"
 )
@@ -13,15 +12,15 @@ var ExitChan chan bool
 
 type EventsFile struct {
 	Cluster map[string]string
-	Events []Event
+	Events  []Event
 }
 
 type Event struct {
-	Type string `json:"type,omitempty"`
-	Command string `json:"command,omitempty"`
-	FromEngine string `json:"from_engine,omitempty"`
+	Type          string `json:"type,omitempty"`
+	Command       string `json:"command,omitempty"`
+	FromEngine    string `json:"from_engine,omitempty"`
 	FromContainer string `json:"from_container,omitempty"`
-	Log string `json:"log,omitempty"`
+	Log           string `json:"log,omitempty"`
 }
 
 func loadYaml(filename string) (*EventsFile, error) {
