@@ -31,21 +31,17 @@ func NewEventHandler(eventsFile *EventsFile) (*EventHandler, error) {
 	return eventHandler, nil
 }
 
-func (h *EventHandler) findEvent(eventType string) *Event {
+func (h *EventHandler) findEvent(eventType string) []*Event {
+	events := []*Event{}
 	for typ, i := range h.handlerIndex {
 		if typ == eventType {
-			return &h.eventsFile.Events[i]
+			events = append(events, &h.eventsFile.Events[i])
 		}
 	}
-	return nil
+	return events
 }
 
-func (h *EventHandler) buildEnviron(event *citadel.Event) []string {
-	env := []string{}
-	for name, addr := range h.eventsFile.Cluster {
-		envVar := fmt.Sprintf("ENGINE_%s=%s", strings.ToUpper(name), addr)
-		env = append(env, envVar)
-	}
+func buildEnviron(env []string, event *citadel.Event) []string {
 	env = append(env, fmt.Sprintf("FROM_ENGINE=%s", event.Engine.ID))
 	env = append(env, fmt.Sprintf("FROM_CONTAINER=%s", event.Container.Name))
 	return env
@@ -56,26 +52,44 @@ func execCommand(command string, env []string) {
 	cmd.Env = env
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Printf("Cannot exec the event handler command: %s", err)
+		log.Printf("Cannot exec the event handler command \"%s\": %s", command, err)
+	} else {
+		log.Printf("Returned: %s", out)
 	}
-	log.Printf("Returned: %s", out)
 }
 
 func (h *EventHandler) Handle(e *citadel.Event) error {
-	ev := h.findEvent(e.Type)
-	if ev == nil {
+	evs := h.findEvent(e.Type)
+	if len(evs) < 1 {
 		log.Printf("Uncaught event: type %s from %s@%s on %s", e.Type,
 			e.Engine.ID, e.Engine.Addr, e.Container.Name)
 		return nil
 	}
-	//TODO: build environment and executes the different handlers (log, command)
-	log.Printf("GOT EVENT: %#v", e)
-	if ev.Command != "" {
-		env := h.buildEnviron(e)
-		execCommand(ev.Command, env)
+	env := []string{}
+	for name, addr := range h.eventsFile.Cluster {
+		envVar := fmt.Sprintf("ENGINE_%s=%s", strings.ToUpper(name), addr)
+		env = append(env, envVar)
 	}
-	if ev.Log != "" {
-		log.Printf("LOG: %s", ev.Log)
+	for _, ev := range evs {
+		if ev.FromEngine != "" &&
+			(strings.ToLower(e.Engine.ID) != strings.ToLower(ev.FromEngine)) {
+			log.Printf("Expected event from engine \"%s\", got it from \"%s\". Ignoring.",
+				ev.FromEngine, e.Engine.ID)
+			return nil
+		}
+		if ev.FromContainer != "" &&
+			(strings.ToLower(e.Container.Name) != strings.ToLower(ev.FromContainer)) {
+			log.Printf("Expected event from container \"%s\", got it from \"%s\". Ignoring.",
+				ev.FromContainer, e.Container.Name)
+			return nil
+		}
+		if ev.Command != "" {
+			env := buildEnviron(env, e)
+			execCommand(ev.Command, env)
+		}
+		if ev.Log != "" {
+			log.Printf("LOG: %s", ev.Log)
+		}
 	}
 	// Return code is not used there
 	return nil

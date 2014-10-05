@@ -7,8 +7,8 @@ cluster:
 events:
     - 
         type: kill, tcp_disconnect, die
-        from_engine: bar
-        from_container: blah
-        #command: echo docker -H $ENGINE_FOO exec -- redis
-        command: env
+        from_engine: foo
+        #from_container: blah
+        command: docker -H $ENGINE_FOO exec -- redis
+        #command: env
         log: This is a test
