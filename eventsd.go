@@ -16,11 +16,11 @@ type EventsFile struct {
 }
 
 type Event struct {
-	Type          string `json:"type,omitempty"`
-	Command       string `json:"command,omitempty"`
-	FromEngine    string `json:"from_engine,omitempty"`
-	FromContainer string `json:"from_container,omitempty"`
-	Log           string `json:"log,omitempty"`
+	Type          string `yaml:"type,omitempty"`
+	Command       string `yaml:"command,omitempty"`
+	FromEngine    string `yaml:"from_engine,omitempty"`
+	FromContainer string `yaml:"from_container,omitempty"`
+	Log           string `yaml:"log,omitempty"`
 }
 
 func loadYaml(filename string) (*EventsFile, error) {
@@ -50,7 +50,7 @@ func main() {
 		log.Fatalf("Cannot init the cluster: %s", err)
 	}
 	ExitChan = make(chan bool, 1)
-	eventHandler, err := NewEventHandler(eventsFile.Events)
+	eventHandler, err := NewEventHandler(eventsFile)
 	if err != nil {
 		log.Fatalf("Cannot create the event handler: %s", err)
 	}

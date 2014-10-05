@@ -9,5 +9,6 @@ events:
         type: kill, tcp_disconnect, die
         from_engine: bar
         from_container: blah
-        command: docker -H $ENGINE_FOO exec -- redis
-        log: Hello world $ENV
+        #command: echo docker -H $ENGINE_FOO exec -- redis
+        command: env
+        log: This is a test
