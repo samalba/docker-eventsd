@@ -10,6 +10,6 @@ events:
         from_engine: foo
         #from_container: blah
         image_contains: ubuntu
-        command: docker -H $ENGINE_FOO exec -- redis
+        command: docker -H $ENGINE_FOO exec -- echo hello world
         #command: env
         log: This is a test
