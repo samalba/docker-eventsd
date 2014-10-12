@@ -11,8 +11,8 @@ docker-eventsd listens to any events on a cluster of docker hosts. When it recei
 
 It allows to change the state of your cluster dynamically at runtime.
 
-Possible use case
------------------
+Possible use cases
+------------------
 
 - Mysql master-slave (promote the slave as master when the master goes down)
 - Dynamic load-balancing (register new backends to the Load-Balancer when new containers start)
