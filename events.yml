@@ -9,6 +9,7 @@ events:
         type: kill, tcp_disconnect, die
         from_engine: foo
         #from_container: blah
+        image_contains: ubuntu
         command: docker -H $ENGINE_FOO exec -- redis
         #command: env
         log: This is a test

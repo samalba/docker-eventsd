@@ -83,6 +83,12 @@ func (h *EventHandler) Handle(e *citadel.Event) error {
 				ev.FromContainer, e.Container.Name)
 			return nil
 		}
+		if ev.ImageContains != "" &&
+			(strings.Contains(strings.ToLower(e.Container.Image.Name), ev.ImageContains) == false) {
+			log.Printf("Expected event from an image name which contains \"%s\", received \"%s\". Ignoring.",
+				ev.ImageContains, e.Container.Image.Name)
+			return nil
+		}
 		if ev.Command != "" {
 			env := buildEnviron(env, e)
 			execCommand(ev.Command, env)

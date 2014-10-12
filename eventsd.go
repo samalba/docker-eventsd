@@ -20,6 +20,7 @@ type Event struct {
 	Command       string `yaml:"command,omitempty"`
 	FromEngine    string `yaml:"from_engine,omitempty"`
 	FromContainer string `yaml:"from_container,omitempty"`
+	ImageContains string `yaml:"image_contains,omitempty"`
 	Log           string `yaml:"log,omitempty"`
 }
 
