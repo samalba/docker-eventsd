@@ -34,9 +34,19 @@ The purpose of this file is to:
   - set the command handler (the command to trigger when all the above matches)
 
 The command handler runs in a real shell with a custom environment to give info on where the event comes from:
-- FROM_ENGINE= (contains the engine name)
-- FROM_CONTAINER= (contains the container name)
-- ENGINE_FOO= (contains the daemon URL of the engine foo)
+- `FROM_ENGINE=` (contains the engine name)
+- `FROM_CONTAINER=` (contains the container name)
+- `ENGINE_FOO=` (contains the daemon URL of the engine foo)
+
+The last thing is to launch the `docker-eventsd` process with the events.yml file as an argument:
+
+```
+$ go build && ./docker-eventsd events.yml
+2014/10/12 11:24:04 Listening to events...
+2014/10/12 11:24:04 Get http://192.168.59.105:2375/v1.10/events: dial tcp 192.168.59.105:2375: host is down
+2014/10/12 11:24:06 Uncaught event: type create from foo@tcp://192.168.59.103:2375 on /grave_euclid
+2014/10/12 11:24:06 Uncaught event: type start from foo@tcp://192.168.59.103:2375 on /grave_euclid
+```
 
 TODO
 ----
